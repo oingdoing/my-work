@@ -1,0 +1,347 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f3f5f7;
+  --foreground: #111827;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --accent: #1fb7a6;
+}
+
+/* Tailwind v4 theme: registers CSS variables for utilities (e.g. bg-background) */
+/* stylelint-disable-next-line at-rule-no-unknown */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #f3f5f7;
+    --foreground: #111827;
+    --card: #ffffff;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #1fb7a6;
+  }
+}
+
+body {
+  min-width: 320px;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.btn-modify,
+.btn-save-plan,
+.btn-setting-pay,
+.btn-delete-data,
+.btn-save-data,
+.btn-confirm,
+.btn-cancel,
+.btn-create-date,
+.btn-copy-monthdata {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.btn-modify:focus-visible,
+.btn-save-plan:focus-visible,
+.btn-setting-pay:focus-visible,
+.btn-delete-data:focus-visible,
+.btn-save-data:focus-visible,
+.btn-confirm:focus-visible,
+.btn-cancel:focus-visible,
+.btn-create-date:focus-visible,
+.btn-copy-monthdata:focus-visible {
+  outline: 2px solid #14b8a6;
+  outline-offset: 2px;
+}
+
+.btn-confirm:hover,
+.btn-save-plan:hover,
+.btn-save-data:hover {
+  box-shadow: 0 6px 16px rgba(20, 184, 166, 0.24);
+}
+
+.btn-cancel:hover,
+.btn-modify:hover,
+.btn-setting-pay:hover,
+.btn-copy-monthdata:hover {
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.12);
+}
+
+.btn-delete-data:hover {
+  box-shadow: 0 6px 14px rgba(107, 114, 128, 0.28);
+}
+
+.section-content {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* shared section card */
+.section-card {
+  border-radius: 28px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  padding: 1.25rem;
+  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.06);
+}
+@media (min-width: 768px) {
+  .section-card {
+    padding: 1.5rem;
+  }
+}
+.section-card-form input,
+.section-card-form select {
+  font-size: 0.875rem;
+}
+@media (min-width: 768px) {
+  .section-card-form input,
+  .section-card-form select {
+    font-size: 1rem;
+  }
+}
+
+/* section header row */
+.section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.section-heading {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+@media (min-width: 768px) {
+  .section-heading {
+    font-size: 1.25rem;
+  }
+}
+
+/* table */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 1rem;
+}
+.cell-th {
+  border: 1px solid var(--border);
+  padding: 0.75rem;
+}
+.cell-td {
+  border: 1px solid var(--border);
+  background: var(--card);
+  padding: 0.625rem;
+}
+.thead-row {
+  background: #f9fafb;
+  color: #4b5563;
+}
+
+/* table inline input/select */
+.input-edit {
+  height: 2.5rem;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background: #f9fafb;
+  padding: 0.375rem 0.75rem;
+  outline: none;
+}
+.input-edit:focus {
+  border-color: #2dd4bf;
+}
+.input-edit.text-right {
+  text-align: right;
+}
+
+/* 분류별 생활비 - 분류 열(첫번째 th) 셀 색상 (td는 기본 배경 유지) */
+tr[data-living-type="연간구독"] > th {
+  background: #2a1c0012;
+  color: #2c2c2b;
+}
+tr[data-living-type="월간구독"] > th {
+  background: #2a1c0012;
+  color: #2c2c2b;
+}
+tr[data-living-type="기본생활"] > th {
+  background: rgba(0, 96, 38, 0.156);
+  color: #2a533c;
+}
+tr[data-living-type="낭비"] > th {
+  background: rgba(206, 24, 0, 0.164);
+  color: #6d3531;
+}
+tr[data-living-type] > td {
+  background: var(--card);
+}
+
+/* 지출예정/실제지출 - 분류 열(첫번째 th) 셀 색상 (td는 기본 배경 유지) */
+tr[data-ledger-category="고정저축"] > th {
+  background: rgba(0, 96, 38, 0.156);
+  color: #2a533c;
+}
+tr[data-ledger-category="고정지출"] > th {
+  background: rgba(127, 51, 0, 0.156);
+  color: #584437;
+}
+tr[data-ledger-category="고정투자"] > th {
+  background: rgba(0, 118, 217, 0.203);
+  color: #264a72;
+}
+tr[data-ledger-category="유동지출"] > th {
+  background: rgba(209, 156, 0, 0.282);
+  color: #655121;
+}
+tr[data-ledger-category="추가지출"] > th {
+  background: #2a1c0012;
+  color: #2c2c2b;
+}
+tr[data-ledger-category] > td {
+  background: var(--card);
+}
+
+/* row add / delete cell button */
+.btn-row-add {
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background: #f9fafb;
+  padding: 0 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.btn-delete-cell {
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 1rem;
+}
+@media (min-width: 768px) {
+  .modal-overlay {
+    align-items: center;
+  }
+}
+.modal-panel {
+  width: 100%;
+  max-width: 24rem;
+  border-radius: 1.5rem;
+  background: var(--card);
+  padding: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+.modal-panel-md {
+  max-width: 28rem;
+}
+
+/* toast */
+.toast-wrap {
+  pointer-events: none;
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  z-index: 60;
+  transform: translateX(-50%);
+  padding: 0 1rem;
+}
+.toast-panel {
+  min-width: 260px;
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align:center;
+  box-shadow: 0 12px 26px rgba(17, 24, 39, 0.2);
+}
+.toast-panel--success {
+  border: none;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+}
+.toast-panel--error {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+/* table cell width */
+.section-budget-category table th:nth-child(5),
+.section-budget-category table td:nth-child(5) {
+  width: 320px;
+}
+.section-living-coast table th:nth-child(2),
+.section-living-coast table td:nth-child(2) {
+  width: 185px;
+}
+.section-expense-planned table th:nth-child(2),
+.section-expense-planned table td:nth-child(2) {
+  min-width: 120px;
+}
+.section-expense-planned table th:nth-child(4),
+.section-expense-planned table td:nth-child(4) {
+  width: 80px;
+}
+.section-expense-planned table th:nth-child(5),
+.section-expense-planned table td:nth-child(5) {
+  width: 150px;
+}
+@media (max-width: 768px) {
+  .app-main {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    word-break: keep-all;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+  .app-main .section-month-nav {
+    margin-bottom: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .app-main .section-month-nav + * {
+    margin-top: 0;
+  }
+  .app-main .month-create-buttons {
+    margin-top: 45px;
+  }
+  .app-main .section-title {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  .app-main table {
+    max-width: max-content;
+  }
+  .app-main .table-living-summary {
+    max-width: 100%;
+  }
+}
