@@ -112,6 +112,7 @@ export default function Home() {
   const [pendingPayCategoryDeleteId, setPendingPayCategoryDeleteId] = useState<string | null>(null);
   const [draftPayCategories, setDraftPayCategories] = useState<PayCategory[]>([]);
   const [isEditSwitchAlertOpen, setIsEditSwitchAlertOpen] = useState(false);
+  const [isSaveBlockedAlertOpen, setIsSaveBlockedAlertOpen] = useState(false);
   const [pendingEditTarget, setPendingEditTarget] = useState<"purpose" | "living" | "planned" | "actual" | null>(null);
   const [isCopyMonthDataOpen, setIsCopyMonthDataOpen] = useState(false);
   const [copySourceMonth, setCopySourceMonth] = useState<string>("");
@@ -350,8 +351,15 @@ export default function Home() {
     setIsPayCategoryDeleteConfirmOpen(false);
   };
 
+  const isAnyEditing =
+    isPurposeEditing || isLivingEditing || isPlannedEditing || isActualEditing;
+
   const saveMonth = async () => {
     if (!selectedMonth) return;
+    if (isAnyEditing) {
+      setIsSaveBlockedAlertOpen(true);
+      return;
+    }
     setSaving(true);
     setMessage("");
     try {
@@ -518,12 +526,8 @@ export default function Home() {
     setIsEditSwitchAlertOpen(false);
   };
   const openSaveBasicDataDialog = () => {
-    if (isPlannedEditing || isActualEditing) {
-      setIsCrossSectionEditAlertOpen(true);
-      return;
-    }
-    if (isPurposeEditing || isLivingEditing) {
-      setIsSaveBasicDataConfirmOpen(true);
+    if (isAnyEditing) {
+      setIsSaveBlockedAlertOpen(true);
       return;
     }
     void saveFixed();
@@ -1687,6 +1691,31 @@ export default function Home() {
                 onClick={() => void confirmSaveBasicData()}
                 disabled={saving}
                 className="btn-confirm h-10 rounded-xl bg-teal-600 px-4 text-sm font-semibold text-white disabled:opacity-50"
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {isSaveBlockedAlertOpen ? (
+        <div
+          className="modal-overlay"
+          onClick={() => setIsSaveBlockedAlertOpen(false)}
+        >
+          <div
+            className="modal-panel"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h3 className="text-base font-semibold">
+              아직 수정이 완료되지 않은 영역이 있습니다. 수정을 완료하고 저장해 주세요.
+            </h3>
+            <div className="mt-4 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsSaveBlockedAlertOpen(false)}
+                className="btn-confirm h-10 rounded-xl bg-teal-600 px-4 text-sm font-semibold text-white"
               >
                 확인
               </button>
