@@ -105,8 +105,6 @@ export default function Home() {
   const [isDeleteMonthBlockedAlertOpen, setIsDeleteMonthBlockedAlertOpen] = useState(false);
   const [isCreateNextMonthConfirmOpen, setIsCreateNextMonthConfirmOpen] = useState(false);
   const [isCreatePrevMonthConfirmOpen, setIsCreatePrevMonthConfirmOpen] = useState(false);
-  const [isSaveBasicDataConfirmOpen, setIsSaveBasicDataConfirmOpen] = useState(false);
-  const [isCrossSectionEditAlertOpen, setIsCrossSectionEditAlertOpen] = useState(false);
   const [isPayCategoryEditorOpen, setIsPayCategoryEditorOpen] = useState(false);
   const [isPayCategoryDeleteConfirmOpen, setIsPayCategoryDeleteConfirmOpen] = useState(false);
   const [pendingPayCategoryDeleteId, setPendingPayCategoryDeleteId] = useState<string | null>(null);
@@ -354,6 +352,53 @@ export default function Home() {
   const isAnyEditing =
     isPurposeEditing || isLivingEditing || isPlannedEditing || isActualEditing;
 
+  const saveAll = async () => {
+    if (isAnyEditing) {
+      setIsSaveBlockedAlertOpen(true);
+      return;
+    }
+    setSaving(true);
+    setMessage("");
+    try {
+      const [purposeRes, livingRes] = await Promise.all([
+        fetch("/api/fixed/purpose", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rows: purposeAccounts }),
+        }),
+        fetch("/api/fixed/living", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rows: livingGroups }),
+        }),
+      ]);
+      if (!purposeRes.ok || !livingRes.ok) throw new Error("고정 정보 저장 실패");
+
+      if (selectedMonth) {
+        const response = await fetch(`/api/months/${selectedMonth}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            salaryAmount,
+            carryCashFromPrev,
+            additionalIncomeType,
+            taxDeduction,
+            plannedItems,
+            actualItems,
+          }),
+        });
+        if (!response.ok) throw new Error("월 저장 실패");
+      }
+
+      await loadData(selectedMonth ?? undefined);
+      showToast("모든 데이터를 저장했습니다.", "success");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "저장 실패", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const saveMonth = async () => {
     if (!selectedMonth) return;
     if (isAnyEditing) {
@@ -525,30 +570,6 @@ export default function Home() {
     setPendingEditTarget(null);
     setIsEditSwitchAlertOpen(false);
   };
-  const openSaveBasicDataDialog = () => {
-    if (isAnyEditing) {
-      setIsSaveBlockedAlertOpen(true);
-      return;
-    }
-    void saveFixed();
-  };
-  const confirmCrossSectionAndContinueBasicSave = () => {
-    setIsPlannedEditing(false);
-    setIsActualEditing(false);
-    setIsCrossSectionEditAlertOpen(false);
-    if (isPurposeEditing || isLivingEditing) {
-      setIsSaveBasicDataConfirmOpen(true);
-      return;
-    }
-    void saveFixed();
-  };
-  const confirmSaveBasicData = async () => {
-    setIsPurposeEditing(false);
-    setIsLivingEditing(false);
-    setIsSaveBasicDataConfirmOpen(false);
-    await saveFixed();
-  };
-
   const copyMonthData = async () => {
     if (!selectedMonth || !copySourceMonth) return;
     const ok = window.confirm("정말 복사하시겠습니까?");
@@ -1055,7 +1076,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="my-8 flex items-center justify-between">
+      <div className="my-8 flex items-center justify-end">
         <button
           type="button"
           onClick={() => {
@@ -1065,13 +1086,6 @@ export default function Home() {
           className="btn-setting-pay h-11 min-w-36 rounded-2xl border border-gray-200 bg-white px-6 text-sm font-semibold text-gray-700"
         >
           결제 수단 설정
-        </button>
-        <button
-          onClick={openSaveBasicDataDialog}
-          disabled={saving}
-          className="btn-save-plan h-11 min-w-36 rounded-2xl bg-teal-500 px-6 text-sm font-semibold text-white transition hover:bg-teal-600 disabled:opacity-50"
-        >
-          에상 저장
         </button>
       </div>
       <div className="mb-[50px] h-px w-full bg-gray-200/90" />
@@ -1319,8 +1333,8 @@ export default function Home() {
             삭제
           </button>
           <button
-            onClick={saveMonth}
-            disabled={saving || !selectedMonth}
+            onClick={saveAll}
+            disabled={saving}
             className="btn-save-data h-11 min-w-36 rounded-2xl bg-teal-600 px-6 text-sm font-semibold text-white transition hover:bg-teal-700 disabled:opacity-50"
           >
             저장
@@ -1666,39 +1680,6 @@ export default function Home() {
         </div>
       ) : null}
 
-      {isSaveBasicDataConfirmOpen ? (
-        <div
-          className="modal-overlay"
-          onClick={() => setIsSaveBasicDataConfirmOpen(false)}
-        >
-          <div
-            className="modal-panel"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <h3 className="text-base font-semibold">
-              현재 수정이 진행 중입니다. 수정을 완료하고 현재 데이터를 저장하시겠습니까?
-            </h3>
-            <div className="mt-4 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setIsSaveBasicDataConfirmOpen(false)}
-                className="btn-cancel h-10 rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700"
-              >
-                취소
-              </button>
-              <button
-                type="button"
-                onClick={() => void confirmSaveBasicData()}
-                disabled={saving}
-                className="btn-confirm h-10 rounded-xl bg-teal-600 px-4 text-sm font-semibold text-white disabled:opacity-50"
-              >
-                확인
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
       {isSaveBlockedAlertOpen ? (
         <div
           className="modal-overlay"
@@ -1715,38 +1696,6 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => setIsSaveBlockedAlertOpen(false)}
-                className="btn-confirm h-10 rounded-xl bg-teal-600 px-4 text-sm font-semibold text-white"
-              >
-                확인
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {isCrossSectionEditAlertOpen ? (
-        <div
-          className="modal-overlay"
-          onClick={() => setIsCrossSectionEditAlertOpen(false)}
-        >
-          <div
-            className="modal-panel"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <h3 className="text-base font-semibold">
-              다른 영역에서 수정이 완료되지 않았습니다. 수정하던 내용을 저장하고 현재 영역을 수정하시겠습니까?
-            </h3>
-            <div className="mt-4 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setIsCrossSectionEditAlertOpen(false)}
-                className="btn-cancel h-10 rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700"
-              >
-                취소
-              </button>
-              <button
-                type="button"
-                onClick={confirmCrossSectionAndContinueBasicSave}
                 className="btn-confirm h-10 rounded-xl bg-teal-600 px-4 text-sm font-semibold text-white"
               >
                 확인
