@@ -674,26 +674,7 @@ export default function Home() {
       </section>
 
       <section className="section-budget-category section-card section-card-form">
-        <div className="section-header-row">
-          <h2 className="section-heading">목적별 통장 & 카드 사용 분류</h2>
-          <div className="flex items-center gap-2">
-            {isPurposeEditing && (
-              <button
-                type="button"
-                onClick={() => void cancelEditSection("purpose")}
-                className="btn-cancel h-10 rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700"
-              >
-                취소
-              </button>
-            )}
-            <button
-              onClick={() => requestEditSection("purpose")}
-              className={`btn-modify h-10 rounded-xl border px-4 text-sm font-medium ${isPurposeEditing ? "border-[#333] bg-[#333] text-white" : "border-gray-200 bg-gray-50"}`}
-            >
-              {isPurposeEditing ? "수정 완료" : "수정"}
-            </button>
-          </div>
-        </div>
+        <h2 className="section-heading">목적별 통장 & 카드 사용 분류</h2>
         <div className="table-wrap mt-[32px]">
           <table className="w-full min-w-[820px] border-collapse text-sm [&_th]:whitespace-nowrap">
             <thead>
@@ -846,29 +827,27 @@ export default function Home() {
             행 추가
           </button>
         ) : null}
+        <div className="mt-3 flex justify-end gap-2">
+          {isPurposeEditing && (
+            <button
+              type="button"
+              onClick={() => void cancelEditSection("purpose")}
+              className="btn-cancel h-10 rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700"
+            >
+              취소
+            </button>
+          )}
+          <button
+            onClick={() => requestEditSection("purpose")}
+            className={`btn-modify h-10 rounded-xl border px-4 text-sm font-medium ${isPurposeEditing ? "border-[#333] bg-[#333] text-white" : "border-gray-200 bg-gray-50"}`}
+          >
+            {isPurposeEditing ? "수정 완료" : "수정"}
+          </button>
+        </div>
       </section>
 
       <section className="section-living-coast section-card section-card-form">
-        <div className="section-header-row">
-          <h2 className="section-heading">분류별 생활비</h2>
-          <div className="flex items-center gap-2">
-            {isLivingEditing && (
-              <button
-                type="button"
-                onClick={() => void cancelEditSection("living")}
-                className="btn-cancel h-10 rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700"
-              >
-                취소
-              </button>
-            )}
-            <button
-              onClick={() => requestEditSection("living")}
-              className={`btn-modify h-10 rounded-xl border px-4 text-sm font-medium ${isLivingEditing ? "border-[#333] bg-[#333] text-white" : "border-gray-200 bg-gray-50"}`}
-            >
-              {isLivingEditing ? "수정 완료" : "수정"}
-            </button>
-          </div>
-        </div>
+        <h2 className="section-heading">분류별 생활비</h2>
         <div className="table-wrap mt-4">
           <table className="w-full min-w-[820px] border-collapse text-sm [&_th]:whitespace-nowrap">
             <thead>
@@ -1006,6 +985,23 @@ export default function Home() {
             행 추가
           </button>
         ) : null}
+        <div className="mt-3 flex justify-end gap-2">
+          {isLivingEditing && (
+            <button
+              type="button"
+              onClick={() => void cancelEditSection("living")}
+              className="btn-cancel h-10 rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700"
+            >
+              취소
+            </button>
+          )}
+          <button
+            onClick={() => requestEditSection("living")}
+            className={`btn-modify h-10 rounded-xl border px-4 text-sm font-medium ${isLivingEditing ? "border-[#333] bg-[#333] text-white" : "border-gray-200 bg-gray-50"}`}
+          >
+            {isLivingEditing ? "수정 완료" : "수정"}
+          </button>
+        </div>
         <div className="mt-[40px] grid grid-cols-1 gap-[40px] lg:grid-cols-2">
           <div className="rounded-2xl">
             <h3 className="text-[16px] font-semibold text-gray-700">분류 정산</h3>
@@ -1184,7 +1180,7 @@ export default function Home() {
             onChange={setPlannedItems}
             editable={isPlannedEditing}
             payCategories={payCategories}
-            headerActions={
+            footerActions={
               <div className="flex items-center gap-2">
                 {isPlannedEditing && (
                   <button
@@ -1211,7 +1207,7 @@ export default function Home() {
               onChange={setActualItems}
               editable={isActualEditing}
               payCategories={payCategories}
-              headerActions={
+              footerActions={
                 <div className="flex items-center gap-2">
                   {isActualEditing && (
                     <button
@@ -1781,7 +1777,7 @@ function LedgerEditor({
   onChange,
   editable,
   payCategories,
-  headerActions,
+  footerActions,
   extraActions,
 }: {
   title: string;
@@ -1789,15 +1785,12 @@ function LedgerEditor({
   onChange: (next: LedgerItem[]) => void;
   editable: boolean;
   payCategories: PayCategory[];
-  headerActions?: React.ReactNode;
+  footerActions?: React.ReactNode;
   extraActions?: React.ReactNode;
 }) {
   return (
     <div className="min-w-0">
-      <div className="flex items-center justify-between gap-4">
-        <h3 className="text-lg font-semibold">{title}</h3>
-        {headerActions}
-      </div>
+      <h3 className="text-lg font-semibold">{title}</h3>
       <div className="table-wrap mt-3">
         <table className="w-full min-w-[640px] border-collapse text-sm [&_th]:whitespace-nowrap">
           <thead>
@@ -1927,6 +1920,9 @@ function LedgerEditor({
           </button>
           {extraActions}
         </div>
+      ) : null}
+      {footerActions ? (
+        <div className="mt-3 flex justify-end gap-2">{footerActions}</div>
       ) : null}
     </div>
   );
