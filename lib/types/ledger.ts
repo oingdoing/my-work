@@ -51,6 +51,7 @@ export type MonthRecord = {
   salaryAmount: number;
   carryCashFromPrev: number;
   additionalIncomeType: AdditionalIncomeType;
+  taxDeduction: number;
   status: "draft" | "closed";
 };
 

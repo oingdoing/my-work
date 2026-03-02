@@ -7,6 +7,7 @@ type SaveMonthBody = {
   salaryAmount: number;
   carryCashFromPrev: number;
   additionalIncomeType?: string;
+  taxDeduction?: number;
   plannedItems: LedgerItem[];
   actualItems: LedgerItem[];
 };
@@ -23,6 +24,7 @@ export async function PUT(
       salaryAmount: Number(body.salaryAmount || 0),
       carryCashFromPrev: Number(body.carryCashFromPrev || 0),
       additionalIncomeType: body.additionalIncomeType ?? "이월금액",
+      taxDeduction: Number(body.taxDeduction ?? 0),
       plannedItems: body.plannedItems ?? [],
       actualItems: body.actualItems ?? [],
     });

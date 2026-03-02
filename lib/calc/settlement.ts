@@ -22,13 +22,14 @@ export const calculateSettlement = (
   plannedItems: LedgerItem[],
   actualItems: LedgerItem[],
   carryCashFromPrev = 0,
+  taxDeduction = 0,
 ): SettlementSummary => {
+  const totalIncome =
+    Number(salary || 0) + Number(carryCashFromPrev || 0) - Number(taxDeduction || 0);
   const plannedTotalOut = sumOutgoing(plannedItems);
   const actualTotalOut = sumOutgoing(actualItems);
-  const plannedNetCash =
-    Number(salary || 0) + Number(carryCashFromPrev || 0) - plannedTotalOut;
-  const actualNetCash =
-    Number(salary || 0) + Number(carryCashFromPrev || 0) - actualTotalOut;
+  const plannedNetCash = totalIncome - plannedTotalOut;
+  const actualNetCash = totalIncome - actualTotalOut;
 
   const categories: CategoryType[] = [
     "고정저축",

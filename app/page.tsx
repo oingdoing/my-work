@@ -91,6 +91,7 @@ export default function Home() {
   const [months, setMonths] = useState<BootstrapPayload["months"]>([]);
   const [salaryAmount, setSalaryAmount] = useState(0);
   const [carryCashFromPrev, setCarryCashFromPrev] = useState(0);
+  const [taxDeduction, setTaxDeduction] = useState(0);
   const [additionalIncomeType, setAdditionalIncomeType] = useState<"이월금액" | "인센티브" | "연말정산" | "추가업무" | "기타">("이월금액");
   const [purposeAccounts, setPurposeAccounts] = useState<PurposeAccount[]>([]);
   const [livingGroups, setLivingGroups] = useState<LivingGroup[]>([]);
@@ -123,11 +124,19 @@ export default function Home() {
     if (!selectedMonthRecord) return;
     setSalaryAmount(selectedMonthRecord.salaryAmount);
     setCarryCashFromPrev(selectedMonthRecord.carryCashFromPrev);
+    setTaxDeduction(selectedMonthRecord.taxDeduction ?? 0);
   }, [selectedMonthRecord]);
 
   const settlement = useMemo(
-    () => calculateSettlement(salaryAmount, plannedItems, actualItems, carryCashFromPrev),
-    [salaryAmount, plannedItems, actualItems, carryCashFromPrev],
+    () =>
+      calculateSettlement(
+        salaryAmount,
+        plannedItems,
+        actualItems,
+        carryCashFromPrev,
+        taxDeduction,
+      ),
+    [salaryAmount, plannedItems, actualItems, carryCashFromPrev, taxDeduction],
   );
   const categoryExpenseStats = useMemo(() => {
     return categories.map((categoryType) => {
@@ -263,6 +272,7 @@ export default function Home() {
       const monthData = data.months.find((m) => m.yyyymm === data.selectedMonth) ?? data.months[0];
       setSalaryAmount(monthData?.salaryAmount ?? 0);
       setCarryCashFromPrev(monthData?.carryCashFromPrev ?? 0);
+      setTaxDeduction(monthData?.taxDeduction ?? 0);
       setAdditionalIncomeType(monthData?.additionalIncomeType ?? "이월금액");
     } catch (error) {
       showToast(error instanceof Error ? error.message : "조회 실패", "error");
@@ -352,6 +362,7 @@ export default function Home() {
           salaryAmount,
           carryCashFromPrev,
           additionalIncomeType,
+          taxDeduction,
           plannedItems,
           actualItems,
         }),
@@ -554,6 +565,7 @@ export default function Home() {
           salaryAmount: sourceMonthRecord?.salaryAmount ?? 0,
           carryCashFromPrev: sourceMonthRecord?.carryCashFromPrev ?? 0,
           additionalIncomeType: sourceMonthRecord?.additionalIncomeType ?? "이월금액",
+          taxDeduction: sourceMonthRecord?.taxDeduction ?? 0,
           plannedItems: data.plannedItems ?? [],
           actualItems: data.actualItems ?? [],
         }),
@@ -1064,7 +1076,7 @@ export default function Home() {
         <div className="section-header-row">
           <h2 className="section-heading">지출예정 / 실제지출</h2>
         </div>
-        <div className="section-content mt-3 grid gap-3 md:grid-cols-2">
+        <div className="section-content mt-3 space-y-3">
           <div
             className={`flex flex-col gap-1 text-sm ${!isPlannedEditing ? "cursor-pointer" : ""}`}
             role={!isPlannedEditing ? "button" : undefined}
@@ -1099,35 +1111,52 @@ export default function Home() {
               className="mt-1 h-11 w-full rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 text-right text-sm outline-none focus:border-teal-400 md:text-base read-only:cursor-pointer read-only:bg-gray-50"
             />
           </div>
-          <label className="flex flex-col gap-1 text-sm">
-            <span>추가 수입(전월 이월, 인센, 연말정산 등)</span>
-            <div className="mt-1 flex gap-2">
-              <select
-                value={additionalIncomeType}
-                onChange={(e) => setAdditionalIncomeType(e.target.value as (typeof additionalIncomeTypes)[number])}
-                disabled={!isPlannedEditing}
-                className="h-11 min-w-[120px] rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm outline-none focus:border-teal-400 disabled:cursor-default disabled:opacity-90 md:text-base"
-              >
-                {additionalIncomeTypes.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+          <div className="grid gap-3 md:grid-cols-2">
+            <label className="flex flex-col gap-1 text-sm">
+              <span>추가 수입(전월 이월, 인센, 연말정산 등)</span>
+              <div className="mt-1 flex gap-2">
+                <select
+                  value={additionalIncomeType}
+                  onChange={(e) => setAdditionalIncomeType(e.target.value as (typeof additionalIncomeTypes)[number])}
+                  disabled={!isPlannedEditing}
+                  className="h-11 min-w-[120px] rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm outline-none focus:border-teal-400 disabled:cursor-default disabled:opacity-90 md:text-base"
+                >
+                  {additionalIncomeTypes.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+                {isPlannedEditing ? (
+                  <input
+                    inputMode="numeric"
+                    value={formatAmount(carryCashFromPrev)}
+                    onChange={(event) => setCarryCashFromPrev(parseAmountInput(event.target.value))}
+                    className="h-11 flex-1 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 text-right outline-none focus:border-teal-400"
+                  />
+                ) : (
+                  <p className="flex h-11 flex-1 items-center justify-end rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 text-right text-sm md:text-base">
+                    {formatAmount(carryCashFromPrev)}
+                  </p>
+                )}
+              </div>
+            </label>
+            <label className="flex flex-col gap-1 text-sm">
+              <span>세금공제</span>
               {isPlannedEditing ? (
                 <input
                   inputMode="numeric"
-                  value={formatAmount(carryCashFromPrev)}
-                  onChange={(event) => setCarryCashFromPrev(parseAmountInput(event.target.value))}
-                  className="h-11 flex-1 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 text-right outline-none focus:border-teal-400"
+                  value={formatAmount(taxDeduction)}
+                  onChange={(event) => setTaxDeduction(parseAmountInput(event.target.value))}
+                  className="mt-1 h-11 w-full rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 text-right text-sm outline-none focus:border-teal-400 md:text-base"
                 />
               ) : (
-                <p className="flex h-11 flex-1 items-center justify-end rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 text-right text-sm md:text-base">
-                  {formatAmount(carryCashFromPrev)}
+                <p className="mt-1 flex h-11 items-center justify-end rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 text-right text-sm md:text-base">
+                  {formatAmount(taxDeduction)}
                 </p>
               )}
-            </div>
-          </label>
+            </label>
+          </div>
         </div>
 
         <div className="mt-6 grid gap-6">
@@ -1234,7 +1263,7 @@ export default function Home() {
       <section className="section-expense-summary section-card">
         <h2 className="section-heading">정산</h2>
         <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          <SummaryCard title="이달 총 수입" value={formatKRW(salaryAmount + carryCashFromPrev)} />
+          <SummaryCard title="이달 총 수입" value={formatKRW(salaryAmount + carryCashFromPrev - taxDeduction)} />
           <SummaryCard title="에상 총지출" value={formatKRW(settlement.plannedTotalOut)} />
           <SummaryCard title="실제 총지출" value={formatKRW(settlement.actualTotalOut)} />
           <SummaryCard title="에상 잔액" value={formatKRW(settlement.plannedNetCash)} />
