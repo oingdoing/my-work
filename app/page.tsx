@@ -1066,11 +1066,11 @@ export default function Home() {
         </div>
         <div className="section-content mt-3 grid gap-3 md:grid-cols-2">
           <div
-            className={`flex flex-col gap-1 text-sm ${!(isPlannedEditing || isActualEditing) ? "cursor-pointer" : ""}`}
-            role={!(isPlannedEditing || isActualEditing) ? "button" : undefined}
-            tabIndex={!(isPlannedEditing || isActualEditing) ? 0 : undefined}
+            className={`flex flex-col gap-1 text-sm ${!isPlannedEditing ? "cursor-pointer" : ""}`}
+            role={!isPlannedEditing ? "button" : undefined}
+            tabIndex={!isPlannedEditing ? 0 : undefined}
             onMouseDown={
-              !(isPlannedEditing || isActualEditing)
+              !isPlannedEditing
                 ? (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -1079,7 +1079,7 @@ export default function Home() {
                 : undefined
             }
             onKeyDown={
-              !(isPlannedEditing || isActualEditing)
+              !isPlannedEditing
                 ? (e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
@@ -1093,7 +1093,7 @@ export default function Home() {
             <input
               type={isSalaryHidden ? "password" : "text"}
               inputMode="numeric"
-              readOnly={!(isPlannedEditing || isActualEditing)}
+              readOnly={!isPlannedEditing}
               value={formatAmount(salaryAmount)}
               onChange={(event) => setSalaryAmount(parseAmountInput(event.target.value))}
               className="mt-1 h-11 w-full rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 text-right text-sm outline-none focus:border-teal-400 md:text-base read-only:cursor-pointer read-only:bg-gray-50"
@@ -1105,7 +1105,7 @@ export default function Home() {
               <select
                 value={additionalIncomeType}
                 onChange={(e) => setAdditionalIncomeType(e.target.value as (typeof additionalIncomeTypes)[number])}
-                disabled={!(isPlannedEditing || isActualEditing)}
+                disabled={!isPlannedEditing}
                 className="h-11 min-w-[120px] rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm outline-none focus:border-teal-400 disabled:cursor-default disabled:opacity-90 md:text-base"
               >
                 {additionalIncomeTypes.map((opt) => (
@@ -1114,7 +1114,7 @@ export default function Home() {
                   </option>
                 ))}
               </select>
-              {isPlannedEditing || isActualEditing ? (
+              {isPlannedEditing ? (
                 <input
                   inputMode="numeric"
                   value={formatAmount(carryCashFromPrev)}
