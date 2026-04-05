@@ -623,7 +623,7 @@ export default function Home() {
       <section className="section-title pt-2 text-left">
         <h1 className="text-[20px] font-bold tracking-tight md:text-[22px]">가계부 - 예산 점검 페이지</h1>
         <p className="mt-2 text-sm text-gray-500">
-          에상 지출과 실제 지출을 함께 기록하고, 월 정산에서 잔여 현금을 확인합니다.
+          예상 지출과 실제 지출을 함께 기록하고, 월 정산에서 잔여 현금을 확인합니다.
         </p>
       </section>
 
@@ -1278,9 +1278,9 @@ export default function Home() {
         <h2 className="section-heading">정산</h2>
         <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           <SummaryCard title="이달 총 수입" value={formatKRW(salaryAmount + carryCashFromPrev - taxDeduction)} />
-          <SummaryCard title="에상 총지출" value={formatKRW(settlement.plannedTotalOut)} />
+          <SummaryCard title="예상 총지출" value={formatKRW(settlement.plannedTotalOut)} />
           <SummaryCard title="실제 총지출" value={formatKRW(settlement.actualTotalOut)} />
-          <SummaryCard title="에상 잔액" value={formatKRW(settlement.plannedNetCash)} />
+          <SummaryCard title="예상 잔액" value={formatKRW(settlement.plannedNetCash)} />
           <SummaryCard title="실제 잔액" value={formatKRW(settlement.actualNetCash)} />
           <SummaryCard title="잔액 차이" value={formatKRW(settlement.delta)} />
         </div>
@@ -1289,7 +1289,7 @@ export default function Home() {
             <thead>
               <tr className="thead-row">
                 <th className="cell-th text-left">카테고리</th>
-                <th className="cell-th text-right">에상 - 실제</th>
+                <th className="cell-th text-right">예상 - 실제</th>
               </tr>
             </thead>
             <tbody>
