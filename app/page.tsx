@@ -1303,7 +1303,7 @@ export default function Home() {
           </table>
         </div>
         <div className="expense-card-summary mt-4 rounded-2xl border border-gray-200 bg-gray-50 p-4">
-          <h3 className="font-medium">카드별 실제지출 합계</h3>
+          <h3 className="font-medium">결제수단별 실제지출 합계</h3>
           <div className="mt-2 space-y-1 text-sm">
             {cardSummary.length === 0 ? (
               <p className="text-gray-500">설정된 결제 수단이 없습니다.</p>
@@ -1798,7 +1798,7 @@ function LedgerEditor({
               <th className="cell-th">분류</th>
               <th className="cell-th">항목</th>
               <th className="cell-th">금액</th>
-              <th className="cell-th">카드</th>
+              <th className="cell-th">결제</th>
               <th className="cell-th">메모</th>
               {editable ? <th className="cell-th">삭제</th> : null}
             </tr>
